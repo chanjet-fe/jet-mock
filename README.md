@@ -54,21 +54,80 @@ project-demo
 └── restapi.config.js
 ```
 
-```
-//restapi.config.js 示例
+```js
+/**
+ * restapi.config.js配置示例
+ * jet-mock底层使用express，支持对应于 HTTP 的get、post、put、head、delete、options等各种路由方法
+ * 具体请参考：https://expressjs.com/zh-cn/guide/routing.html
+ */
+const Mock = require("jet-mock/mockTools");
 
 module.exports = {
-  'GET /api/demoGet': {
-    tips: '用于演示GET请求',
-    name: 'jet-mock应用接口数据模拟服务器',
-    github: 'https://github.com/chanjet-fe/jet-mock'
+  /**
+   * 模拟对象类型的静态数据
+   */
+  "GET /api/demoGet": {
+    tips: "用于演示GET请求",
+    name: "jet-mock应用接口数据模拟服务器",
+    github: "https://github.com/chanjet-fe/jet-mock"
   },
-  'POST /api/demoPost': {
-    tips: '用于演示POST请求',
-    name: 'jet-mock应用接口数据模拟服务器',
-    github: 'https://github.com/chanjet-fe/jet-mock'
+  /**
+   * 模拟数组类型的静态数据
+   */
+  "POST /api/demoArray": [
+    {
+      tips: "用于演示返回数组的请求",
+      name: "num1"
+    },
+    {
+      tips: "用于演示返回数组的请求",
+      name: "num2"
+    }
+  ],
+  /**
+   * 使用mockjs语法模拟随机数据
+   * 也可以使用 Mock.Random
+   * 更多信息请参考：https://github.com/nuysoft/Mock/wiki/Mock.Random
+   */
+  "GET /api/tags": (req, res) => {
+    res.send(
+      Mock.mock({
+        "list|100": [{ name: "@city", "value|1-100": 150, "type|0-2": 1 }]
+      })
+    );
+  },
+  /**
+   * 模拟逻辑判断的场景数据，即根据前端传参返回数据
+   * 支持req及res的各种API，具体请参考：
+   * https://expressjs.com/zh-cn/4x/api.html#req
+   * https://expressjs.com/zh-cn/4x/api.html#res
+   */
+  "POST /api/login": (req, res) => {
+    /**
+     * 已集成body-parser中间件，并已配置application/x-www-form-urlencoded和application/json的解析
+     * 可以通过req.body接收请求数据，具体可参考：https://github.com/expressjs/body-parser。
+     */
+    const { password, userName } = req.body;
+    if (password === "888888" && userName === "admin") {
+      res.send({
+        status: "ok",
+        userName: "admin"
+      });
+      return;
+    }
+    if (password === "123456" && userName === "user") {
+      res.send({
+        status: "ok",
+        userName: "user"
+      });
+      return;
+    }
+    res.send({
+      status: "error",
+      userName: "guest"
+    });
   }
-}
+};
 ```
 
 **配置规则**
@@ -118,6 +177,8 @@ module.exports = {
 ```
 
 ## GraphQL
+
+若模拟`GraphQL`请确保你的项目为以下目录结构（可配置）
 
 ```bash
 # 目录结构
@@ -179,7 +240,7 @@ const mocks = {
 module.exports = mocks;
 ```
 
-- 新建 `mock/resolvers`目录用于存放模型解析文件
+- 新建 `mock/resolvers`目录用于存放模型解析文件（可选）
 
 > `resolvers`目录中的解析器将覆盖`gqlmock`目录中的模拟数据，用于处理真实的 GraphQL 服务器环境的数据逻辑。
 
@@ -193,6 +254,26 @@ module.exports = {
 };
 ```
 
+**对于复杂项目的`GraphQL`模拟，以及多人合作开发，可以分文件模块化部署**
+
+```bash
+# 模块化目录结构
+
+project-demo
+├── mock
+│   ├── schema # 数据模型
+│   │   ├── Query.graphql
+│   │   └── Person.graphql
+│   ├── gqlmocks # 模拟数据解析器
+│   │   ├── Global.js
+│   │   ├── Query.js
+│   │   └── Person.js
+│   └── resolvers # 解析器(非必须)
+│       ├── res1.js
+│       └── res2.js
+└── package.json
+```
+
 ## 更多配置
 
 在项目根目录新建`jetmock.config.js`支持模拟服务器的更多配置
@@ -200,6 +281,9 @@ module.exports = {
 ```js
 module.exports = {
   port: 3030, //服务器默认端口号
+  /**
+   * 路径配置
+   */
   path: {
     restApi: "mock/restapi", //用于存放RestApi模块化数据
     restApiConfig: "restapi.config.js", //RestApi配置文件
