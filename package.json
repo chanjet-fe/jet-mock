@@ -1,0 +1,38 @@
+{
+  "name": "jet-mock",
+  "version": "1.0.0",
+  "description": "应用接口数据模拟服务器",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chanjet-fe/jet-mock"
+  },
+  "bin": {
+    "jet-mock": "./bin/jet-mock.js"
+  },
+  "author": "chanjet-fe",
+  "license": "MIT",
+  "dependencies": {
+    "@babel/core": "^7.8.7",
+    "@babel/preset-env": "^7.8.6",
+    "@babel/register": "^7.8.6",
+    "address": "^1.1.2",
+    "apollo-server-express": "^2.10.1",
+    "body-parser": "^1.19.0",
+    "boxen": "^4.2.0",
+    "chalk": "^3.0.0",
+    "consolidate": "^0.15.1",
+    "cookie-parser": "^1.4.4",
+    "cross-spawn": "^7.0.1",
+    "express": "^4.17.1",
+    "express-session": "^1.17.0",
+    "globby": "^11.0.0",
+    "graphql": "^14.6.0",
+    "graphql-tools": "^4.0.7",
+    "handlebars": "^4.1.2",
+    "lodash.merge": "^4.6.2",
+    "mockjs": "^1.1.0",
+    "nodemon": "^2.0.2",
+    "portscanner": "^2.2.0",
+    "url": "^0.11.0"
+  }
+}
